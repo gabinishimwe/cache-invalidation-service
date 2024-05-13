@@ -1,0 +1,31 @@
+version: “3.8”
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - my-shared-network
+
+
+  debezium:
+    image: debezium/server:2.4
+    container_name: debezium-server
+    ports:
+      - 8080:8080
+    volumes:
+      - ./debezium:/debezium/conf
+      - ./debezium/data:/debezium/data
+    depends_on:
+      - rabbitmq
+    networks:
+      - my-shared-network
+
+networks:
+  my-shared-network:
+    external: true
